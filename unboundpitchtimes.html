@@ -179,6 +179,15 @@ body.shot .panel{grid-template-columns:1fr}
       <button class="act primary" id="btnCopy">Copy summary for David</button>
     </div>
   </div>
+  <div class="box merge" style="grid-column:1 / -1">
+    <h2>Team sheet sync (optional)</h2>
+    <p class="hint" style="margin-bottom:8px">Paste the Apps Script web-app URL (ends in /exec) to share everyone's entries through one Google Sheet. Anyone with the page URL sees the whole team. <span id="syncStatus" class="status"></span></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input id="sheetInput" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;min-width:240px;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)">
+      <button class="act primary" id="btnSheetSave">Connect</button>
+      <button class="act" id="btnSheetClear">Disconnect</button>
+    </div>
+  </div>
   <div class="box text" style="grid-column:1 / -1">
     <h2>Plain-text summary</h2>
     <pre class="summary" id="summary"></pre>
@@ -342,7 +351,7 @@ body.shot .panel{grid-template-columns:1fr}
   }
 
   // persistence: localStorage for my own marks (per-browser convenience)
-  function persist(){ try{ localStorage.setItem("unbound_mine", JSON.stringify({n:myName(), k:Object.keys(mine)})); localStorage.setItem("unbound_others", JSON.stringify(others.map(function(p){return {n:p.n,k:Object.keys(p.s)}}))); }catch(e){} }
+  function persist(){ try{ localStorage.setItem("unbound_mine", JSON.stringify({n:myName(), k:Object.keys(mine)})); localStorage.setItem("unbound_others", JSON.stringify(others.map(function(p){return {n:p.n,k:Object.keys(p.s)}}))); }catch(e){} sheetPushSoon(); }
   function restore(){ try{ var m=JSON.parse(localStorage.getItem("unbound_mine")||"null"); if(m){ nameInput.value=m.n||""; (m.k||[]).forEach(function(k){mine[k]=true;}); }
     var o=JSON.parse(localStorage.getItem("unbound_others")||"null"); if(Array.isArray(o)) others=o.map(function(p){var s={};(p.k||[]).forEach(function(k){s[k]=true;});return {n:String(p.n||""),s:s};}); }catch(e){} }
 
@@ -361,9 +370,47 @@ body.shot .panel{grid-template-columns:1fr}
   };
   nameInput.addEventListener("input", function(){ persist(); renderSide(); });
 
+
+  // ===== Team sheet sync (optional Google Sheet backend) =====
+  var SHEET_URL_KEY="unbound_sheet";
+  function sheetUrl(){ try{ return localStorage.getItem(SHEET_URL_KEY)||""; }catch(e){ return ""; } }
+  function setSheetUrl(u){ try{ localStorage.setItem(SHEET_URL_KEY,u); }catch(e){} }
+  function sheetStatus(msg){ var el=document.getElementById("syncStatus"); if(el) el.textContent=msg||""; }
+  var sheetTimer=null;
+  function sheetPushSoon(){ if(!sheetUrl()||!myName()) return; clearTimeout(sheetTimer); sheetTimer=setTimeout(sheetPush,1200); }
+  function sheetPush(){
+    var url=sheetUrl(); if(!url||!myName()) return;
+    fetch(url,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:"put", n:myName(), k:Object.keys(mine)})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){ sheetStatus(d&&d.ok?("synced "+new Date().toLocaleTimeString()):("sync error: "+((d&&d.error)||"?"))); })
+      .catch(function(){ sheetStatus("sync unreachable"); });
+  }
+  function sheetMerge(people){
+    var me=myName(); var map={};
+    others.forEach(function(p){ map[p.n]=p; });
+    (people||[]).forEach(function(p){
+      var n=String(p.n||"").trim(); if(!n||n===me) return;
+      var s={}; (p.k||[]).forEach(function(k){ s[k]=true; });
+      map[n]={n:n,s:s};
+    });
+    others=Object.keys(map).map(function(k){ return map[k]; });
+  }
+  function sheetLoad(){
+    var url=sheetUrl(); if(!url) return;
+    sheetStatus("loading team\u2026");
+    fetch(url+"?action=get")
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if(d&&d.people){ sheetMerge(d.people); persist(); render(); sheetStatus(d.people.length+" on the sheet"); } })
+      .catch(function(){ sheetStatus("sheet unreachable"); });
+  }
+
   // boot
   buildGrid();
   restore();
+  sheetLoad();
+  document.getElementById("btnSheetSave").onclick=function(){ var v=document.getElementById("sheetInput").value.trim(); if(v){ setSheetUrl(v); sheetLoad(); sheetPush(); toast("Team sheet connected"); } };
+  document.getElementById("btnSheetClear").onclick=function(){ setSheetUrl(""); sheetStatus(""); document.getElementById("sheetInput").value=""; toast("Team sheet disconnected"); };
+  if(sheetUrl()) document.getElementById("sheetInput").value=sheetUrl();
   var hm=location.hash.match(/#c=([A-Za-z0-9_\-]+)/);
   if(hm){ var incoming=decode(hm[1]); if(incoming){ mergeList(incoming); persist(); } }
   render();
