@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UNBOUND 2027 Finalist Window: Team Conflicts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#ffffff;
+  --paper:#f6f4ef;
+  --ink:#1c2230;
+  --muted:#5f6675;
+  --line:#d9d6ce;
+  --line-soft:#ebe8e1;
+  --free:#ffffff;
+  --mine:#2f4a8a;
+  --mine-text:#ffffff;
+  --heat1:#c9d4ec;
+  --heat2:#95aad8;
+  --heat3:#5f7cbf;
+  --heat4:#2f4a8a;
+  --heat-text-dark:#1c2230;
+  --heat-text-light:#ffffff;
+  --accent:#b8722a;
+  --ok:#2c7a4b;
+  --ok-bg:#e6f2ea;
+  --btn:#1c2230;
+  --btn-text:#ffffff;
+  --btn2:#ffffff;
+  --btn2-text:#1c2230;
+  --hour-line:#b9b5aa;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c; --paper:#1d2027; --ink:#eceef2; --muted:#a4a9b5;
+    --line:#3a3f4a; --line-soft:#2a2e37; --free:#1d2027;
+    --mine:#8fa8e6; --mine-text:#10141d;
+    --heat1:#2b3550; --heat2:#3f5482; --heat3:#5f7cbf; --heat4:#8fa8e6;
+    --heat-text-dark:#eceef2; --heat-text-light:#10141d;
+    --accent:#e0a460; --ok:#7dc79a; --ok-bg:#1f2f26;
+    --btn:#eceef2; --btn-text:#15171c; --btn2:#1d2027; --btn2-text:#eceef2;
+    --hour-line:#525867;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c; --paper:#1d2027; --ink:#eceef2; --muted:#a4a9b5;
+  --line:#3a3f4a; --line-soft:#2a2e37; --free:#1d2027;
+  --mine:#8fa8e6; --mine-text:#10141d;
+  --heat1:#2b3550; --heat2:#3f5482; --heat3:#5f7cbf; --heat4:#8fa8e6;
+  --heat-text-dark:#eceef2; --heat-text-light:#10141d;
+  --accent:#e0a460; --ok:#7dc79a; --ok-bg:#1f2f26;
+  --btn:#eceef2; --btn-text:#15171c; --btn2:#1d2027; --btn2-text:#eceef2;
+  --hour-line:#525867;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px}
+.sub{color:var(--muted);margin:0;max-width:62ch}
+.sub b{color:var(--ink);font-weight:600}
+.who{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.who img{width:30px;height:30px;border-radius:50%;background:var(--line-soft)}
+.who input{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);width:180px}
+.status{font-size:13px;color:var(--muted);min-height:1.2em}
+.status.warn{color:var(--accent)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 16px}
+.tabs{display:inline-flex;border:1px solid var(--ink);border-radius:8px;overflow:hidden}
+.tabs button{font:inherit;font-weight:600;padding:8px 16px;border:0;background:var(--btn2);color:var(--btn2-text);cursor:pointer}
+.tabs button.on{background:var(--btn);color:var(--btn-text)}
+.spacer{flex:1}
+button.act{font:inherit;font-weight:600;padding:8px 14px;border:1px solid var(--ink);border-radius:8px;background:var(--btn2);color:var(--btn2-text);cursor:pointer}
+button.act.primary{background:var(--btn);color:var(--btn-text)}
+button.act:disabled{opacity:.45;cursor:default}
+.hint{color:var(--muted);font-size:13px;margin:0 0 12px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:0 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:14px;border:1px solid var(--line);border-radius:3px}
+.scroller{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+table{border-collapse:separate;border-spacing:0;min-width:900px;width:100%;user-select:none;-webkit-user-select:none}
+th,td{border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft)}
+thead th{position:sticky;top:0;background:var(--paper);z-index:2;padding:8px 6px;font-weight:600;font-size:13px;text-align:center;border-bottom:1px solid var(--line)}
+thead th small{display:block;font-weight:400;color:var(--muted)}
+thead th.gap,td.gap{width:14px;min-width:14px;background:var(--bg);border-right:1px solid var(--line);border-left:1px solid var(--line)}
+th.time{position:sticky;left:0;background:var(--paper);z-index:1;width:78px;min-width:78px;text-align:right;padding:0 8px;font-weight:500;font-size:12px;color:var(--muted);vertical-align:top;line-height:1;padding-top:2px}
+th.time.half{color:transparent}
+td.slot{height:22px;min-width:76px;background:var(--free);cursor:pointer;position:relative;text-align:center;font-size:11px;font-weight:600}
+tr.hour td.slot,tr.hour th.time{border-top:1px solid var(--hour-line)}
+tr.hour td.gap{border-top:1px solid var(--line)}
+td.slot.mine{background:var(--mine);color:var(--mine-text)}
+td.slot.h1{background:var(--heat1);color:var(--heat-text-dark)}
+td.slot.h2{background:var(--heat2);color:var(--heat-text-dark)}
+td.slot.h3{background:var(--heat3);color:var(--heat-text-light)}
+td.slot.h4{background:var(--heat4);color:var(--heat-text-light)}
+td.slot.free{background:var(--free)}
+.team td.slot{cursor:default}
+.team td.slot.mine{outline:none}
+.panel{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:820px){.panel{grid-template-columns:1fr}}
+.box{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--bg)}
+.box h2{font-size:15px;margin:0 0 10px;font-weight:700}
+.box p{margin:0 0 8px}
+.people{list-style:none;padding:0;margin:0}
+.people li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line-soft)}
+.people li:last-child{border-bottom:0}
+.people img{width:24px;height:24px;border-radius:50%;background:var(--line-soft)}
+.people .n{flex:1;font-weight:500}
+.people .c{color:var(--muted);font-size:13px}
+.people .c.z{color:var(--accent)}
+.days{list-style:none;padding:0;margin:0;font-size:14px}
+.days li{padding:6px 0;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:110px 1fr;gap:10px}
+.days li:last-child{border-bottom:0}
+.days .d{font-weight:600}
+.days .ok{color:var(--ok)}
+.days .bad{color:var(--muted)}
+.days .win{display:inline-block;background:var(--ok-bg);color:var(--ok);border-radius:4px;padding:1px 6px;margin:0 6px 4px 0;font-weight:600;font-size:13px}
+pre.summary{white-space:pre-wrap;font:inherit;font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px;margin:0;max-height:260px;overflow:auto}
+body.shot .bar,body.shot .hint,body.shot header .who,body.shot .box.mine,body.shot .box.text{display:none}
+body.shot .panel{grid-template-columns:1fr}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--btn);color:var(--btn-text);padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>UNBOUND 2027 finalist window</h1>
+    <p class="sub">HubSpot RFP, Phase 2A Creative Track. <b>Mon Oct 5 through Fri Oct 16</b>, 8:00 AM to 6:00 PM Eastern. Block out any time you cannot do a 90-minute live presentation. Leave open time blank. When you're done, copy your link and send it to Phil.</p>
+  </div>
+  <div class="who">
+    <input id="nameInput" placeholder="Your name">
+    <span class="status" id="status"></span>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="tabs">
+    <button id="tabMine" class="on">My conflicts</button>
+    <button id="tabTeam">Team view</button>
+  </div>
+  <span class="spacer"></span>
+  <button class="act" id="btnClear">Clear mine</button>
+  <button class="act" id="btnShot">Screenshot mode</button>
+  <button class="act primary" id="btnLink">Copy my link</button>
+</div>
+
+<p class="hint" id="hint">Click or drag across cells to mark a conflict. Click again to unmark. Enter your name, then use <b>Copy my link</b> and send it to Phil.</p>
+
+<div class="legend" id="legend"></div>
+
+<div class="scroller">
+  <table id="grid"></table>
+</div>
+
+<div class="panel">
+  <div class="box">
+    <h2>Who is included</h2>
+    <ul class="people" id="people"><li class="c">Nobody yet.</li></ul>
+  </div>
+  <div class="box">
+    <h2>Clear 90-minute windows (everyone included is free)</h2>
+    <ul class="days" id="windows"></ul>
+  </div>
+  <div class="box merge" style="grid-column:1 / -1">
+    <h2>Add a teammate's link</h2>
+    <p class="hint" style="margin-bottom:8px">Paste the link they sent you. Their conflicts merge into this page, and your own link updates to include them.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input id="mergeInput" placeholder="Paste link here" style="flex:1;min-width:240px;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)">
+      <button class="act" id="btnMerge">Add</button>
+      <button class="act primary" id="btnCopy">Copy summary for David</button>
+    </div>
+  </div>
+  <div class="box text" style="grid-column:1 / -1">
+    <h2>Plain-text summary</h2>
+    <pre class="summary" id="summary"></pre>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var DAYS = ["2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09",
+              "2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16"];
+  var DOW = ["Mon","Tue","Wed","Thu","Fri","Mon","Tue","Wed","Thu","Fri"];
+  var START = 8*60, END = 18*60, STEP = 30;
+  var SLOTS = []; for (var m = START; m < END; m += STEP) SLOTS.push(m);
+  var NEED = 90 / STEP;
+
+  function pad(n){ return (n<10?"0":"")+n; }
+  function slotKey(d, m){ return d.slice(5) + "_" + pad(Math.floor(m/60)) + pad(m%60); }
+  function fmtTime(m){ var h=Math.floor(m/60), mm=m%60, ap=h>=12?"PM":"AM"; var h12=h%12; if(h12===0)h12=12; return h12+(mm?":"+pad(mm):"")+" "+ap; }
+  function fmtRange(a,b){ return fmtTime(a)+"–"+fmtTime(b); }
+  function dayLabel(i){ return DOW[i]+" Oct "+parseInt(DAYS[i].slice(8),10); }
+
+  var mine = {};      // key -> true
+  var others = [];    // [{n:name, s:{key:true}}]
+  var mode = "mine";
+  var grid = document.getElementById("grid");
+  var nameInput = document.getElementById("nameInput");
+  var toastEl = document.getElementById("toast");
+  var status = document.getElementById("status");
+
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(function(){toastEl.classList.remove("show")},1800); }
+
+  function buildGrid(){
+    var h = "<thead><tr><th class=\"time\"></th>";
+    for (var i=0;i<DAYS.length;i++){ if(i===5) h+="<th class=\"gap\"></th>"; h+="<th>"+DOW[i]+"<small>Oct "+parseInt(DAYS[i].slice(8),10)+"</small></th>"; }
+    h += "</tr></thead><tbody>";
+    for (var s=0;s<SLOTS.length;s++){
+      var mm=SLOTS[s], hour=(mm%60===0);
+      h += "<tr class=\""+(hour?"hour":"")+"\"><th class=\"time "+(hour?"":"half")+"\">"+fmtTime(mm)+"</th>";
+      for (var d=0;d<DAYS.length;d++){ if(d===5) h+="<td class=\"gap\"></td>"; h+="<td class=\"slot\" data-k=\""+slotKey(DAYS[d],mm)+"\"></td>"; }
+      h += "</tr>";
+    }
+    grid.innerHTML = h+"</tbody>";
+  }
+
+  // painting
+  var painting=false, paintTo=true;
+  grid.addEventListener("pointerdown", function(e){
+    if(mode!=="mine") return;
+    var td=e.target.closest("td.slot"); if(!td) return;
+    e.preventDefault(); painting=true; paintTo=!mine[td.dataset.k]; apply(td);
+    grid.setPointerCapture && grid.setPointerCapture(e.pointerId);
+  });
+  grid.addEventListener("pointermove", function(e){ if(!painting) return; var el=document.elementFromPoint(e.clientX,e.clientY); var td=el&&el.closest?el.closest("td.slot"):null; if(td) apply(td); });
+  function endPaint(){ if(!painting) return; painting=false; persist(); renderSide(); }
+  grid.addEventListener("pointerup", endPaint); grid.addEventListener("pointercancel", endPaint); window.addEventListener("pointerup", endPaint);
+  function apply(td){ var k=td.dataset.k; if(!!mine[k]===paintTo) return; if(paintTo) mine[k]=true; else delete mine[k]; td.classList.toggle("mine",paintTo); }
+
+  // people + counts
+  function myName(){ return (nameInput.value||"").trim().slice(0,60); }
+  function peopleList(){
+    var list = others.map(function(p){return {n:p.n, s:p.s}});
+    if (Object.keys(mine).length || myName()) list.unshift({n: myName()||"You", s: mine, me:true});
+    return list;
+  }
+  function allSlots(){ var counts={}, people=peopleList(); people.forEach(function(p){ for(var k in p.s) counts[k]=(counts[k]||0)+1; }); return {counts:counts,total:people.length,people:people}; }
+  function heatClass(n,total){ if(n<=0) return "free"; if(total<=1) return "h4"; var r=n/total; if(r>=1) return "h4"; if(r>=0.66) return "h3"; if(r>=0.34) return "h2"; return "h1"; }
+
+  function render(){
+    var cells=grid.querySelectorAll("td.slot"), a=allSlots();
+    for (var i=0;i<cells.length;i++){
+      var td=cells[i], k=td.dataset.k; td.className="slot"; td.textContent="";
+      if(mode==="mine"){ if(mine[k]) td.classList.add("mine"); }
+      else { var n=a.counts[k]||0; td.classList.add(heatClass(n,a.total)); if(n>0&&a.total>1) td.textContent=n; }
+    }
+    grid.className = mode==="team"?"team":"";
+    renderLegend(a.total); renderSide(a);
+  }
+  function renderSide(a){
+    a = a || allSlots();
+    renderPeople(a); renderWindows(a); document.getElementById("summary").textContent = summaryText(a);
+  }
+  function renderLegend(total){
+    var L=document.getElementById("legend");
+    L.innerHTML = mode==="mine"
+      ? "<span><i style=\"background:var(--free)\"></i>Available</span><span><i style=\"background:var(--mine)\"></i>My conflict</span>"
+      : "<span><i style=\"background:var(--free)\"></i>Everyone free</span><span><i style=\"background:var(--heat1)\"></i><i style=\"background:var(--heat2)\"></i><i style=\"background:var(--heat3)\"></i><i style=\"background:var(--heat4)\"></i>Number of people with a conflict ("+total+" included)</span>";
+  }
+  function renderPeople(a){
+    var ul=document.getElementById("people"); ul.innerHTML="";
+    if(!a.people.length){ ul.innerHTML="<li class=\"c\">Nobody yet.</li>"; return; }
+    a.people.forEach(function(p,idx){
+      var li=document.createElement("li"), n=document.createElement("span"), c=document.createElement("span");
+      n.className="n"; n.textContent=p.n+(p.me?" (you)":"");
+      c.className="c"; var cnt=Object.keys(p.s).length; c.textContent = cnt ? (cnt*STEP/60).toFixed(1).replace(/\.0$/,"")+" hrs blocked" : "no conflicts";
+      li.appendChild(n); li.appendChild(c);
+      if(!p.me){ var x=document.createElement("button"); x.className="act"; x.style.padding="2px 8px"; x.textContent="Remove"; x.onclick=function(){ others.splice(idx-(a.people[0].me?1:0),1); persist(); render(); }; li.appendChild(x); }
+      ul.appendChild(li);
+    });
+  }
+  function freeWindows(a){
+    var out=[];
+    for (var d=0;d<DAYS.length;d++){ var wins=[],run=0,start=null;
+      for (var s=0;s<=SLOTS.length;s++){ var free=s<SLOTS.length&&!(a.counts[slotKey(DAYS[d],SLOTS[s])]);
+        if(free){ if(run===0) start=SLOTS[s]; run++; } else { if(run>=NEED) wins.push([start,start+run*STEP]); run=0; } }
+      out.push(wins); }
+    return out;
+  }
+  function busyRanges(slots,d){ var r=[],run=0,start=null;
+    for (var s=0;s<=SLOTS.length;s++){ var b=s<SLOTS.length&&!!slots[slotKey(DAYS[d],SLOTS[s])];
+      if(b){ if(run===0) start=SLOTS[s]; run++; } else { if(run>0) r.push([start,start+run*STEP]); run=0; } }
+    return r; }
+  function renderWindows(a){
+    var ul=document.getElementById("windows"), fw=freeWindows(a); ul.innerHTML="";
+    for (var d=0;d<DAYS.length;d++){ var li=document.createElement("li"), dd=document.createElement("span"), v=document.createElement("span");
+      dd.className="d"; dd.textContent=dayLabel(d);
+      if(!fw[d].length){ v.className="bad"; v.textContent="No 90-minute opening"; }
+      else fw[d].forEach(function(w){ var s=document.createElement("span"); s.className="win"; s.textContent=fmtRange(w[0],w[1]); v.appendChild(s); });
+      li.appendChild(dd); li.appendChild(v); ul.appendChild(li); }
+  }
+  function summaryText(a){
+    var lines=[];
+    lines.push("Czarnowski Collective: availability for UNBOUND 2027 Phase 2A finalist presentation");
+    lines.push("Window: Oct 5–9 and Oct 12–16, 2026. All times Eastern (ET). "+a.total+" team member"+(a.total===1?"":"s")+" included.");
+    lines.push("");
+    var fw=freeWindows(a);
+    lines.push("Times we can do a 90-minute session (whole team free):");
+    for (var d=0;d<DAYS.length;d++) lines.push("  "+dayLabel(d)+": "+(fw[d].length?fw[d].map(function(w){return fmtRange(w[0],w[1])}).join(", "):"not available"));
+    lines.push("");
+    var u={}; for(var k in a.counts) u[k]=true;
+    lines.push("Conflicts to plan around (combined):"); var any=false;
+    for (var d2=0;d2<DAYS.length;d2++){ var br=busyRanges(u,d2); if(br.length){ any=true; lines.push("  "+dayLabel(d2)+": "+br.map(function(w){return fmtRange(w[0],w[1])}).join(", ")); } }
+    if(!any) lines.push("  None.");
+    lines.push(""); lines.push("Anything outside 8:00 AM–6:00 PM ET should be treated as unavailable.");
+    return lines.join("\n");
+  }
+
+  // encode / decode
+  function encode(list){ // [{n,s}]
+    var compact = list.map(function(p){ return {n:p.n, k:Object.keys(p.s)}; });
+    var json = JSON.stringify(compact);
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  }
+  function decode(str){
+    try{ var b=str.replace(/-/g,"+").replace(/_/g,"/"); while(b.length%4) b+="="; var json=decodeURIComponent(escape(atob(b))); var arr=JSON.parse(json);
+      if(!Array.isArray(arr)) return null;
+      return arr.map(function(p){ var s={}; (p.k||[]).forEach(function(k){ if(typeof k==="string"&&/^\d\d-\d\d_\d{4}$/.test(k)) s[k]=true; }); return {n:String(p.n||"Someone").slice(0,60), s:s}; });
+    }catch(e){ return null; }
+  }
+  function currentList(){ var l=others.slice(); var me=myName(); if(Object.keys(mine).length||me) l.unshift({n:me||"Unnamed",s:mine}); return l; }
+  function myLink(){ var base=location.href.split("#")[0]; return base+"#c="+encode(currentList()); }
+  function mergeList(list){
+    var byName={}; others.forEach(function(p){ byName[p.n.toLowerCase()]=p; });
+    var me=myName().toLowerCase();
+    list.forEach(function(p){
+      var key=p.n.toLowerCase();
+      if(me && key===me){ return; } // don't overwrite my own marks from an imported link
+      if(byName[key]) byName[key].s=p.s; else { others.push(p); byName[key]=p; }
+    });
+  }
+
+  // persistence: localStorage for my own marks (per-browser convenience)
+  function persist(){ try{ localStorage.setItem("unbound_mine", JSON.stringify({n:myName(), k:Object.keys(mine)})); localStorage.setItem("unbound_others", JSON.stringify(others.map(function(p){return {n:p.n,k:Object.keys(p.s)}}))); }catch(e){} }
+  function restore(){ try{ var m=JSON.parse(localStorage.getItem("unbound_mine")||"null"); if(m){ nameInput.value=m.n||""; (m.k||[]).forEach(function(k){mine[k]=true;}); }
+    var o=JSON.parse(localStorage.getItem("unbound_others")||"null"); if(Array.isArray(o)) others=o.map(function(p){var s={};(p.k||[]).forEach(function(k){s[k]=true;});return {n:String(p.n||""),s:s};}); }catch(e){} }
+
+  // controls
+  document.getElementById("tabMine").onclick=function(){ mode="mine"; this.classList.add("on"); document.getElementById("tabTeam").classList.remove("on"); document.getElementById("hint").hidden=false; render(); };
+  document.getElementById("tabTeam").onclick=function(){ mode="team"; this.classList.add("on"); document.getElementById("tabMine").classList.remove("on"); document.getElementById("hint").hidden=true; render(); };
+  document.getElementById("btnClear").onclick=function(){ if(!Object.keys(mine).length) return; if(!confirm("Clear all of your marked conflicts?")) return; mine={}; persist(); render(); };
+  document.getElementById("btnShot").onclick=function(){ var on=document.body.classList.toggle("shot"); if(on){ document.getElementById("tabTeam").click(); this.textContent="Exit screenshot mode"; window.scrollTo(0,0);} else this.textContent="Screenshot mode"; };
+  function copy(t, ok){ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){toast(ok)},function(){prompt("Copy this:",t)}); else prompt("Copy this:",t); }
+  document.getElementById("btnLink").onclick=function(){ if(!myName()){ nameInput.focus(); toast("Enter your name first"); return; } var l=myLink(); history.replaceState(null,"","#c="+encode(currentList())); copy(l,"Link copied. Send it to Phil."); };
+  document.getElementById("btnCopy").onclick=function(){ copy(summaryText(allSlots()),"Summary copied"); };
+  document.getElementById("btnMerge").onclick=function(){
+    var v=document.getElementById("mergeInput").value.trim(); var m=v.match(/#c=([A-Za-z0-9_\-]+)/); var payload=m?m[1]:v;
+    var list=decode(payload); if(!list){ toast("That doesn't look like a valid link"); return; }
+    mergeList(list); persist(); document.getElementById("mergeInput").value=""; render(); toast("Added "+list.length+" "+(list.length===1?"person":"people"));
+  };
+  nameInput.addEventListener("input", function(){ persist(); renderSide(); });
+
+  // boot
+  buildGrid();
+  restore();
+  var hm=location.hash.match(/#c=([A-Za-z0-9_\-]+)/);
+  if(hm){ var incoming=decode(hm[1]); if(incoming){ mergeList(incoming); persist(); } }
+  render();
+})();
+</script>
+</body>
+</html>
